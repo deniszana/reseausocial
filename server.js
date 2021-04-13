@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const path = require("path");
 const userRoutes = require('./routes/user.routes');
 const postRoutes = require('./routes/post.routes');
 
@@ -33,6 +34,13 @@ app.get('/jwtid', requireAuth, (req, res) => {
 // routes
 app.use('/api/user', userRoutes);
 app.use('/api/post', postRoutes);
+
+if (process.env.PROD) {
+  app.use(express.static(path.join(__dirname,"./client/build")));
+  app.get("*",(req,res) => {
+      res.sendFile(path.join(__dirname,"./client/build/index.html"))
+  });
+}
 
 // server
 app.listen(process.env.PORT, () => {
